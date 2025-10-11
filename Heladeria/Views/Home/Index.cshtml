@@ -3,6 +3,22 @@
 }
 
 <div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+    <h1 class="display-4">Heladeria web</h1>
+    <a href="/Heladoes"><button>Helados</button></a>
+    <a href="/Categorias"><button>Categorias</button></a>
+
+    
+    <div>
+        @if (User.Identity.IsAuthenticated)
+    {
+        <span>Nombre de usuario de google: @User.Identity.Name</span>
+        <a asp-controller="CuentaGoogle" asp-action="Logout"><button>Cerrar Sesión</button></a>
+    }
+    else
+    {
+        <a asp-controller="CuentaGoogle" asp-action="Login"><button>Logeate con google</button></a>
+    }
+    </div>
 </div>
+
+

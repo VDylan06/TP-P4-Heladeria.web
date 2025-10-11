@@ -24,10 +24,9 @@ namespace LogicaHeladeria.Data
                 .WithMany(n => n.Helados)
                 .HasForeignKey(helado => helado.IdCategoria);
 
-            // 👉 Configuración para evitar la advertencia sobre 'Precio'
             modelBuilder.Entity<Helado>()
                 .Property(h => h.Precio)
-                .HasPrecision(18, 2); // Puedes ajustar 18 y 2 según necesites
+                .HasPrecision(18, 2); 
         }
 
 
