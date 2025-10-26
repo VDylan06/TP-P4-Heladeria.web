@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Index";
+
 }
 
 <h1>Index</h1>
@@ -9,7 +10,7 @@
 <p>
     <a asp-action="Create">Create New</a>
 </p>
-<table class="table">
+<table class="table" id="miTabla">
     <thead>
         <tr>
             <th>
@@ -34,32 +35,89 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Sabor)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Descripcion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Precio)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CantidadEnStock)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.FechaCreacion)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Categoria.Nombre)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.IdHelado">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdHelado">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdHelado">Delete</a>
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Sabor)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Descripcion)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Precio)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.CantidadEnStock)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FechaCreacion)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Categoria.Nombre)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.IdHelado">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.IdHelado">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.IdHelado">Delete</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>
+
+
+<div style="display: flex; justify-content: center; align-items: center;">
+    <div style="width: 25%; height: 25%;">
+        <canvas id="cuadro"></canvas>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
+<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+<script>
+
+
+    const helados = JSON.parse('@Html.Raw(ViewBag.DatosHeladosPorCategoria)');
+
+    const categorias = helados.map(x  => x.Categoria);
+    const cantidades = helados.map(x  => x.Cantidad);
+
+    //Implemento Chart.js
+    const chartJs = document.getElementById('cuadro');
+
+    const data = {
+        labels: categorias,
+        datasets: [{
+            label: 'Categorías de helado',
+            data: cantidades,
+            backgroundColor: [
+        'rgb(255, 99, 132)',
+        'rgb(54, 162, 235)',
+        'rgb(1, 1, 1)',
+        'rgb(75, 192, 192)',
+        'rgb(153, 102, 255)',
+        'rgb(255, 159, 64)'
+    ],
+            hoverOffset: 4
+        }]
+    };
+
+    const config = {
+        type: 'doughnut',
+        data: data,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    };
+
+    //inicializo el cuadro de verdad pasándole los parámetros necesarios
+      new Chart(chartJs, config);
+
+
+</script>

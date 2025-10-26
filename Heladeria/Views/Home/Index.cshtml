@@ -22,3 +22,25 @@
 </div>
 
 
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+
+    var usuarioLogeado = @((User.Identity.IsAuthenticated) ? "true" : "false");
+
+    if (usuarioLogeado) {
+        Swal.fire({
+      icon: "success",
+      title: "Éxito",
+      text: "Loggeado pá"
+    });
+    } else {
+        Swal.fire({
+      icon: "warning",
+      title: "No se está loggeado.",
+      text: "Prueba a loggearse."
+    });
+    }
+
+</script>

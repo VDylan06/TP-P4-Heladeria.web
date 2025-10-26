@@ -23,6 +23,15 @@ namespace Heladeria.Controllers
         public async Task<IActionResult> Index()
         {
             var heladeriaDbContext = _context.Helados.Include(h => h.Categoria);
+            
+            var datos = heladeriaDbContext.GroupBy(h => h.Categoria.Nombre).Select(g => new
+            {
+                Categoria = g.Key,
+                Cantidad = g.Count()
+            }).ToList();
+
+            ViewBag.DatosHeladosPorCategoria = System.Text.Json.JsonSerializer.Serialize(datos);
+
             return View(await heladeriaDbContext.ToListAsync());
         }
 
