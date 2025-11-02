@@ -6,9 +6,12 @@
 
 <h1>Index</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+@if (ViewBag.EsAdministrador == true)
+{
+    <p>
+        <a asp-action="Create">Crear Nueva Categoría</a>
+    </p>
+}
 <table class="table">
     <thead>
         <tr>
@@ -25,9 +28,14 @@
                 @Html.DisplayFor(modelItem => item.Nombre)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.IdCategoria">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.IdCategoria">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.IdCategoria">Delete</a>
+                <a asp-action="Details" asp-route-id="@item.IdCategoria">Detalles</a>
+                @if (ViewBag.EsAdministrador == true)
+                {
+                    <text> | </text>
+                    <a asp-action="Edit" asp-route-id="@item.IdCategoria">Editar</a>
+                    <text> | </text>
+                    <a asp-action="Delete" asp-route-id="@item.IdCategoria">Borrar</a>
+                }
             </td>
         </tr>
 }

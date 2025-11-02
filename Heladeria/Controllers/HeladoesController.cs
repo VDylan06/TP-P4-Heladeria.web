@@ -7,16 +7,20 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LibreriaDeClases.Modelos;
 using LogicaHeladeria.Data;
+using Heladeria.Servicios;
+using System.Security.Claims;
 
 namespace Heladeria.Controllers
 {
     public class HeladoesController : Controller
     {
         private readonly HeladeriaDbContext _context;
+        private readonly RolService _rolService;
 
-        public HeladoesController(HeladeriaDbContext context)
+        public HeladoesController(HeladeriaDbContext context, RolService rolService)
         {
             _context = context;
+            _rolService = rolService;
         }
 
         // GET: Heladoes
@@ -31,6 +35,10 @@ namespace Heladeria.Controllers
             }).ToList();
 
             ViewBag.DatosHeladosPorCategoria = System.Text.Json.JsonSerializer.Serialize(datos);
+
+            // Verificar si el usuario es administrador para mostrar botones
+            var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? User.FindFirst("email")?.Value;
+            ViewBag.EsAdministrador = await _rolService.EsAdministrador(email ?? "");
 
             return View(await heladeriaDbContext.ToListAsync());
         }
@@ -51,12 +59,23 @@ namespace Heladeria.Controllers
                 return NotFound();
             }
 
+            // Verificar si el usuario es administrador para mostrar botón de editar
+            var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? User.FindFirst("email")?.Value;
+            ViewBag.EsAdministrador = await _rolService.EsAdministrador(email ?? "");
+
             return View(helado);
         }
 
         // GET: Heladoes/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            // Verificar si el usuario es administrador
+            var email = User.FindFirst(ClaimTypes.Email)?.Value ?? User.FindFirst("email")?.Value;
+            if (!await _rolService.EsAdministrador(email ?? ""))
+            {
+                return Forbid(); // Retorna 403 Forbidden
+            }
+
             ViewData["IdCategoria"] = new SelectList(_context.Categorias, "IdCategoria", "Nombre");
             return View();
         }
@@ -68,6 +87,13 @@ namespace Heladeria.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdHelado,Sabor,Descripcion,Precio,CantidadEnStock,IdCategoria,FechaCreacion")] Helado helado)
         {
+            // Verificar si el usuario es administrador
+            var email = User.FindFirst(ClaimTypes.Email)?.Value ?? User.FindFirst("email")?.Value;
+            if (!await _rolService.EsAdministrador(email ?? ""))
+            {
+                return Forbid(); // Retorna 403 Forbidden
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(helado);
@@ -81,6 +107,13 @@ namespace Heladeria.Controllers
         // GET: Heladoes/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            // Verificar si el usuario es administrador
+            var email = User.FindFirst(ClaimTypes.Email)?.Value ?? User.FindFirst("email")?.Value;
+            if (!await _rolService.EsAdministrador(email ?? ""))
+            {
+                return Forbid(); // Retorna 403 Forbidden
+            }
+
             if (id == null)
             {
                 return NotFound();
@@ -102,6 +135,13 @@ namespace Heladeria.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("IdHelado,Sabor,Descripcion,Precio,CantidadEnStock,IdCategoria,FechaCreacion")] Helado helado)
         {
+            // Verificar si el usuario es administrador
+            var email = User.FindFirst(ClaimTypes.Email)?.Value ?? User.FindFirst("email")?.Value;
+            if (!await _rolService.EsAdministrador(email ?? ""))
+            {
+                return Forbid(); // Retorna 403 Forbidden
+            }
+
             if (id != helado.IdHelado)
             {
                 return NotFound();
@@ -134,6 +174,13 @@ namespace Heladeria.Controllers
         // GET: Heladoes/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            // Verificar si el usuario es administrador
+            var email = User.FindFirst(ClaimTypes.Email)?.Value ?? User.FindFirst("email")?.Value;
+            if (!await _rolService.EsAdministrador(email ?? ""))
+            {
+                return Forbid(); // Retorna 403 Forbidden
+            }
+
             if (id == null)
             {
                 return NotFound();
@@ -155,6 +202,13 @@ namespace Heladeria.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            // Verificar si el usuario es administrador
+            var email = User.FindFirst(ClaimTypes.Email)?.Value ?? User.FindFirst("email")?.Value;
+            if (!await _rolService.EsAdministrador(email ?? ""))
+            {
+                return Forbid(); // Retorna 403 Forbidden
+            }
+
             var helado = await _context.Helados.FindAsync(id);
             if (helado != null)
             {

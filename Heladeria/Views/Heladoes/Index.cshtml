@@ -7,9 +7,12 @@
 
 <h1>Index</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
+@if (ViewBag.EsAdministrador == true)
+{
+    <p>
+        <a asp-action="Create">Crear Nuevo Helado</a>
+    </p>
+}
 <table class="table" id="miTabla">
     <thead>
         <tr>
@@ -57,9 +60,14 @@
                     @Html.DisplayFor(modelItem => item.Categoria.Nombre)
                 </td>
                 <td>
-                    <a asp-action="Edit" asp-route-id="@item.IdHelado">Edit</a> |
-                    <a asp-action="Details" asp-route-id="@item.IdHelado">Details</a> |
-                    <a asp-action="Delete" asp-route-id="@item.IdHelado">Delete</a>
+                    <a asp-action="Details" asp-route-id="@item.IdHelado">Detalles</a>
+                    @if (ViewBag.EsAdministrador == true)
+                    {
+                        <text> | </text>
+                        <a asp-action="Edit" asp-route-id="@item.IdHelado">Editar</a>
+                        <text> | </text>
+                        <a asp-action="Delete" asp-route-id="@item.IdHelado">Borrar</a>
+                    }
                 </td>
             </tr>
         }

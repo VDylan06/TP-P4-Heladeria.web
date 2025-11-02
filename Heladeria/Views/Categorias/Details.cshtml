@@ -4,7 +4,7 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h1>Detalle</h1>
 
 <div>
     <h4>Categoria</h4>
@@ -19,6 +19,10 @@
     </dl>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.IdCategoria">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    @if (ViewBag.EsAdministrador == true)
+    {
+        <a asp-action="Edit" asp-route-id="@Model?.IdCategoria">Editar</a>
+        <text> | </text>
+    }
+    <a asp-action="Index">Volver a index</a>
 </div>

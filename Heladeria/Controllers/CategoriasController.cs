@@ -7,21 +7,29 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LogicaHeladeria.Data;
 using LibreriaDeClases.Modelos;
+using Heladeria.Servicios;
+using System.Security.Claims;
 
 namespace Heladeria.Controllers
 {
     public class CategoriasController : Controller
     {
         private readonly HeladeriaDbContext _context;
+        private readonly RolService _rolService;
 
-        public CategoriasController(HeladeriaDbContext context)
+        public CategoriasController(HeladeriaDbContext context, RolService rolService)
         {
             _context = context;
+            _rolService = rolService;
         }
 
         // GET: Categorias
         public async Task<IActionResult> Index()
         {
+            //  validación para mostrar botones pertinentes si es admin
+            var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? User.FindFirst("email")?.Value;
+            ViewBag.EsAdministrador = await _rolService.EsAdministrador(email ?? "");
+
             return View(await _context.Categorias.ToListAsync());
         }
 
@@ -40,12 +48,21 @@ namespace Heladeria.Controllers
                 return NotFound();
             }
 
+            var email = User.FindFirst(System.Security.Claims.ClaimTypes.Email)?.Value ?? User.FindFirst("email")?.Value;
+            ViewBag.EsAdministrador = await _rolService.EsAdministrador(email ?? "");
+
             return View(categoria);
         }
 
         // GET: Categorias/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+            
+            var email = User.FindFirst(ClaimTypes.Email)?.Value ?? User.FindFirst("email")?.Value;
+            if (!await _rolService.EsAdministrador(email ?? ""))
+            {
+                return Forbid(); // Retorna  prohibido (403) en caso de que no sea admin
+            }
             return View();
         }
 
@@ -56,6 +73,13 @@ namespace Heladeria.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("IdCategoria,Nombre")] Categoria categoria)
         {
+            
+            var email = User.FindFirst(ClaimTypes.Email)?.Value ?? User.FindFirst("email")?.Value;
+            if (!await _rolService.EsAdministrador(email ?? ""))
+            {
+                return Forbid();  
+            }
+
             if (ModelState.IsValid)
             {
                 _context.Add(categoria);
@@ -68,6 +92,13 @@ namespace Heladeria.Controllers
         // GET: Categorias/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
+            
+            var email = User.FindFirst(ClaimTypes.Email)?.Value ?? User.FindFirst("email")?.Value;
+            if (!await _rolService.EsAdministrador(email ?? ""))
+            {
+                return Forbid();
+            }
+
             if (id == null)
             {
                 return NotFound();
@@ -88,6 +119,13 @@ namespace Heladeria.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("IdCategoria,Nombre")] Categoria categoria)
         {
+            
+            var email = User.FindFirst(ClaimTypes.Email)?.Value ?? User.FindFirst("email")?.Value;
+            if (!await _rolService.EsAdministrador(email ?? ""))
+            {
+                return Forbid(); 
+            }
+
             if (id != categoria.IdCategoria)
             {
                 return NotFound();
@@ -119,6 +157,13 @@ namespace Heladeria.Controllers
         // GET: Categorias/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
+            
+            var email = User.FindFirst(ClaimTypes.Email)?.Value ?? User.FindFirst("email")?.Value;
+            if (!await _rolService.EsAdministrador(email ?? ""))
+            {
+                return Forbid();
+            }
+
             if (id == null)
             {
                 return NotFound();
@@ -139,6 +184,13 @@ namespace Heladeria.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
+            
+            var email = User.FindFirst(ClaimTypes.Email)?.Value ?? User.FindFirst("email")?.Value;
+            if (!await _rolService.EsAdministrador(email ?? ""))
+            {
+                return Forbid();
+            }
+
             var categoria = await _context.Categorias.FindAsync(id);
             if (categoria != null)
             {

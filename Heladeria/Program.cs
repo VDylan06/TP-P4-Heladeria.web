@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 
 
-// Habilita servicios de autenticación
+// Habilita servicios de autenticaciï¿½n
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -24,6 +24,9 @@ builder.Services.AddAuthentication(options =>
     options.ClaimActions.MapJsonKey("urn:google:picture", "picture", "url");
     options.ClaimActions.MapJsonKey("urn:google:locale", "locale", "string");
 
+    // Mapear el email del usuario
+    options.ClaimActions.MapJsonKey(System.Security.Claims.ClaimTypes.Email, "email", "string");
+
     options.SaveTokens = true;
 });
 
@@ -33,6 +36,9 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<HeladeriaDbContext>
     (options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Registrar el servicio de roles
+builder.Services.AddScoped<Heladeria.Servicios.RolService>();
 
 
 var app = builder.Build();
@@ -51,12 +57,46 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// Autenticación y autorización
+// Autenticaciï¿½n y autorizaciï¿½n
 app.UseAuthentication();
 app.UseAuthorization();
+
+// Middleware para registrar usuarios automÃ¡ticamente
+app.UseMiddleware<Heladeria.Middleware.RegistroUsuarioMiddleware>();
+
+// Inicializar roles automÃ¡ticamente
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<HeladeriaDbContext>();
+    InicializarRoles(context);
+}
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
+
+// MÃ©todo para inicializar roles automÃ¡ticamente
+static void InicializarRoles(HeladeriaDbContext context)
+{
+    // Verificar si ya existen roles
+    if (!context.Roles.Any())
+    {
+        // Crear rol Usuario
+        var rolUsuario = new LibreriaDeClases.Modelos.Rol
+        {
+            Descripcion = "Usuario"
+        };
+        context.Roles.Add(rolUsuario);
+
+        // Crear rol Administrador
+        var rolAdministrador = new LibreriaDeClases.Modelos.Rol
+        {
+            Descripcion = "Administrador"
+        };
+        context.Roles.Add(rolAdministrador);
+
+        context.SaveChanges();
+    }
+}

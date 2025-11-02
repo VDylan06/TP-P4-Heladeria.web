@@ -1,23 +1,27 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Página inicial";
 }
 
 <div class="text-center">
     <h1 class="display-4">Heladeria web</h1>
-    <a href="/Heladoes"><button>Helados</button></a>
-    <a href="/Categorias"><button>Categorias</button></a>
+    
+    @if (User.Identity.IsAuthenticated)
+    {
+        <a href="/Heladoes"><button>Helados</button></a>
+        <a href="/Categorias"><button>Categorias</button></a>
+    }
 
     
     <div>
         @if (User.Identity.IsAuthenticated)
-    {
-        <span>Nombre de usuario de google: @User.Identity.Name</span>
-        <a asp-controller="CuentaGoogle" asp-action="Logout"><button>Cerrar Sesión</button></a>
-    }
-    else
-    {
-        <a asp-controller="CuentaGoogle" asp-action="Login"><button>Logeate con google</button></a>
-    }
+        {
+            <span>Nombre de usuario de google: @User.Identity.Name</span>
+            <a asp-controller="CuentaGoogle" asp-action="Logout"><button>Cerrar Sesión</button></a>
+        }
+        else
+        {
+            <a asp-controller="CuentaGoogle" asp-action="Login"><button>Logeate con google</button></a>
+        }
     </div>
 </div>
 
@@ -26,21 +30,27 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <script>
-
-    var usuarioLogeado = @((User.Identity.IsAuthenticated) ? "true" : "false");
-
-    if (usuarioLogeado) {
+    var estaAutenticado = @((User.Identity?.IsAuthenticated == true) ? "true" : "false");
+    
+    // Verificar si hay parámetro en la URL indicando login exitoso
+    var urlParams = new URLSearchParams(window.location.search);
+    var loginExitoso = urlParams.get('loginExitoso');
+    
+    if (loginExitoso === 'true' && estaAutenticado) {
+        // Mostrar mensaje de éxito solo cuando se loguea exitosamente
         Swal.fire({
-      icon: "success",
-      title: "Éxito",
-      text: "Loggeado pá"
-    });
-    } else {
+            icon: "success",
+            title: "Éxito",
+            text: "Loggeado pá"
+        });
+        // Limpiar la URL para que no aparezca en cada recarga
+        window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (!estaAutenticado) {
+        // Mostrar advertencia siempre que NO está logueado
         Swal.fire({
-      icon: "warning",
-      title: "No se está loggeado.",
-      text: "Prueba a loggearse."
-    });
+            icon: "warning",
+            title: "No se está logueado.",
+            text: "Prueba a loggearse."
+        });
     }
-
 </script>

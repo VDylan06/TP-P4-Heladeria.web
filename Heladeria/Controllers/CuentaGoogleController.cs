@@ -8,20 +8,23 @@ namespace Heladeria.Controllers
 {
     public class CuentaGoogleController : Controller
     {
+
         public IActionResult Index()
         {
             return View();
         }
+
         public IActionResult Login(string returnUrl = "/")
         {
             var properties = new AuthenticationProperties
             {
-                RedirectUri = returnUrl
+                //Si no está logueado  muestra siempre una advertencia
+                //si acaba de loguearse: muestra un success una vez
+                RedirectUri = returnUrl + "?loginExitoso=true"
             };
 
             return Challenge(properties, GoogleDefaults.AuthenticationScheme);
         }
-
 
         public async Task<IActionResult> GoogleResponse()
         {
@@ -43,6 +46,5 @@ namespace Heladeria.Controllers
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Index", "Home");
         }
-
     }
 }

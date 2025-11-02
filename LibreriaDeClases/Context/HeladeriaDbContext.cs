@@ -15,6 +15,10 @@ namespace LogicaHeladeria.Data
         }
         public DbSet<Helado> Helados { get; set; }
         public DbSet<Categoria> Categorias { get; set; }
+        public DbSet<Rol> Roles { get; set; }
+        public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<RolUsuario> RolesUsuarios { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -26,7 +30,23 @@ namespace LogicaHeladeria.Data
 
             modelBuilder.Entity<Helado>()
                 .Property(h => h.Precio)
-                .HasPrecision(18, 2); 
+                .HasPrecision(18, 2);
+
+            // Configuración de RolUsuario
+            modelBuilder.Entity<RolUsuario>()
+                .HasOne(ru => ru.Usuario)
+                .WithMany(u => u.RolesUsuarios)
+                .HasForeignKey(ru => ru.IdUsuario);
+
+            modelBuilder.Entity<RolUsuario>()
+                .HasOne(ru => ru.Rol)
+                .WithMany(r => r.RolesUsuarios)
+                .HasForeignKey(ru => ru.IdRol);
+
+            // Configuración de FechaBaja como date
+            modelBuilder.Entity<RolUsuario>()
+                .Property(ru => ru.FechaBaja)
+                .HasColumnType("date");
         }
 
 
