@@ -32,8 +32,8 @@ namespace LibreriaDeClases.Modelos
         [Display(Name = "Cantidad en Stock")]
         public int CantidadEnStock { get; set; }
 
+        [Display(Name = "Categoría")]
         public int IdCategoria { get; set; }
-
 
         [Display(Name = "Fecha de Creación")]
         [DataType(DataType.DateTime)]

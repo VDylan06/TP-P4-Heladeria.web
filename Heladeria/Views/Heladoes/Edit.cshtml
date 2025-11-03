@@ -25,7 +25,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Precio" class="control-label"></label>
-                <input asp-for="Precio" class="form-control" />
+                <input asp-for="Precio" class="form-control" type="text" inputmode="decimal" step="0.01" />
                 <span asp-validation-for="Precio" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -55,5 +55,18 @@
 </div>
 
 @section Scripts {
+    <script>
+        (function () {
+            var form = document.querySelector('form[asp-action="Edit"]');
+            if (form) {
+                form.addEventListener('submit', function () {
+                    var precioInput = document.getElementById('Precio');
+                    if (precioInput && precioInput.value && precioInput.value.indexOf('.') !== -1 && precioInput.value.indexOf(',') === -1) {
+                        precioInput.value = precioInput.value.replace('.', ',');
+                    }
+                });
+            }
+        })();
+    </script>
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
