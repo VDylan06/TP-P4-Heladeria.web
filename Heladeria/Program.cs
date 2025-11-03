@@ -4,12 +4,14 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.EntityFrameworkCore;
 using System.Numerics;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
 
 var builder = WebApplication.CreateBuilder(args);
 
 
 
-// Habilita servicios de autenticaci�n
+// Habilita servicios de autenticación
 builder.Services.AddAuthentication(options =>
 {
     options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
@@ -40,6 +42,15 @@ builder.Services.AddDbContext<HeladeriaDbContext>
 // Registrar el servicio de roles
 builder.Services.AddScoped<Heladeria.Servicios.RolService>();
 
+// Configurar localización por defecto (forzar cultura es-AR)
+var defaultCulture = new CultureInfo("es-AR");
+var supportedCultures = new List<CultureInfo> { defaultCulture, new CultureInfo("es-ES") };
+builder.Services.Configure<RequestLocalizationOptions>(options =>
+{
+    options.DefaultRequestCulture = new RequestCulture(defaultCulture);
+    options.SupportedCultures = supportedCultures;
+    options.SupportedUICultures = supportedCultures;
+});
 
 var app = builder.Build();
 
@@ -55,9 +66,13 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
+// Aplicar localización (antes del routing)
+var localizationOptions = app.Services.GetRequiredService<Microsoft.Extensions.Options.IOptions<RequestLocalizationOptions>>().Value;
+app.UseRequestLocalization(localizationOptions);
+
 app.UseRouting();
 
-// Autenticaci�n y autorizaci�n
+// Autenticación y autorización
 app.UseAuthentication();
 app.UseAuthorization();
 
