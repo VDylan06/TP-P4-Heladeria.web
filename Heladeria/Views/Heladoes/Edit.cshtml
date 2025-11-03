@@ -61,8 +61,9 @@
             if (form) {
                 form.addEventListener('submit', function () {
                     var precioInput = document.getElementById('Precio');
-                    if (precioInput && precioInput.value && precioInput.value.indexOf('.') !== -1 && precioInput.value.indexOf(',') === -1) {
-                        precioInput.value = precioInput.value.replace('.', ',');
+                    if (precioInput && precioInput.value) {
+                        // Normalizar: convertir comas a puntos (en-US)
+                        precioInput.value = precioInput.value.replace(',', '.');
                     }
                 });
             }

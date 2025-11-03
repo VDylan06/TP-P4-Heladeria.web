@@ -42,9 +42,9 @@ builder.Services.AddDbContext<HeladeriaDbContext>
 // Registrar el servicio de roles
 builder.Services.AddScoped<Heladeria.Servicios.RolService>();
 
-// Configurar localización por defecto (forzar cultura es-AR)
-var defaultCulture = new CultureInfo("es-AR");
-var supportedCultures = new List<CultureInfo> { defaultCulture, new CultureInfo("es-ES") };
+// Configurar localización por defecto (forzar cultura en-US)
+var defaultCulture = new CultureInfo("en-US");
+var supportedCultures = new List<CultureInfo> { defaultCulture };
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
     options.DefaultRequestCulture = new RequestCulture(defaultCulture);
