@@ -50,10 +50,7 @@ builder.Services.Configure<RequestLocalizationOptions>(options =>
     options.DefaultRequestCulture = new RequestCulture(defaultCulture);
     options.SupportedCultures = supportedCultures;
     options.SupportedUICultures = supportedCultures;
-    options.RequestCultureProviders = new List<IRequestCultureProvider>
-    {
-        new FixedRequestCultureProvider(defaultCulture)
-    };
+    options.RequestCultureProviders.Clear();
 });
 
 var app = builder.Build();
