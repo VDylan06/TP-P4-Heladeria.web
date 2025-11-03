@@ -81,11 +81,7 @@
     </div>
 </div>
 
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" />
-<script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 
 <script>
 
@@ -129,3 +125,19 @@
 
 
 </script>
+
+@section Scripts {
+    <script>
+        $(function () {
+            $('#miTabla').DataTable({
+                language: { url: '//cdn.datatables.net/plug-ins/1.13.8/i18n/es-ES.json' },
+                pageLength: 10,
+                lengthMenu: [5, 10, 25, 50],
+                order: [],
+                columnDefs: [
+                    { targets: -1, orderable: false, searchable: false }
+                ]
+            });
+        });
+    </script>
+}
